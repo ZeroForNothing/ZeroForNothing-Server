@@ -1,8 +1,6 @@
 let Connection = require('../Connection')
 let LobbyBase = require('./LobbyBase')
-let {
-  nanoid
-} = require('nanoid')
+export {}
 module.exports = class SearchLobby extends LobbyBase {
   constructor() {
     super();
@@ -21,7 +19,7 @@ module.exports = class SearchLobby extends LobbyBase {
 
     return true;
   }
-  onEnterSearchLobby(connection = Connection, leader = null) {
+  onEnterSearchLobby(connection : typeof Connection, leader : string) {
     let lobby = this;
     lobby.connections.push(connection);
     if (leader != null)
@@ -30,13 +28,15 @@ module.exports = class SearchLobby extends LobbyBase {
     connection.clientSocket.join(lobby.id);
     //connection.everySocketJoinLobby(lobby.id);
   }
-  onLeaveSearchLobby() {
+  onLeaveSearchLobby(connection : typeof Connection) {
     let lobby = this;
     connection.searchLobby = undefined;
     let index = lobby.connections.indexOf(connection);
     if (index > -1) {
       lobby.connections.splice(index, 1);
     }
+    let searchLobbyLength = lobby.connections.length;
+    let searchLobbyMode = lobby.settings.gameMode;
     connection.everySocket('playerLeftLobby', null);
     connection.everySocketInLobby('playerLeftLobby', lobby.id, {
       username: connection.user.name,
@@ -44,8 +44,6 @@ module.exports = class SearchLobby extends LobbyBase {
       lobbyCount: searchLobbyLength,
       gameType: searchLobbyMode
     })
-    let searchLobbyLength = lobby.connections.length;
-    let searchLobbyMode = lobby.settings.gameMode;
 
     if (connection.id === lobby.leader && searchLobbyLength > 0) {
       console.log('changing lobby Leader')
@@ -59,7 +57,7 @@ module.exports = class SearchLobby extends LobbyBase {
       connection.server.closeDownLobby(lobby.id);
     }
   }
-  onSwitchSearchLobby(connection = Connection, lobbyOwnerID = null) {
+  onSwitchSearchLobby(connection = Connection, lobbyOwnerID : string) {
     let lobby = this;
     let searchLobbys = connection.server.searchLobbys;
 

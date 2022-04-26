@@ -3,9 +3,74 @@ var Vector3 = require('../Utility/Vector3.js');
 let Bullet = require('../SpawnableObjects/Bullet')
 let EarthShatter = require('../SpawnableObjects/EarthShatter')
 let BotAI = require('../AI/BotAI')
-
+export {}
 module.exports = class InfernoBlaze {
-  constructor(userLvl) {
+  id : number;
+  name : string;
+  role : number;
+  maxHealth : number;
+  maxMana : number;
+  maxStamina : number;
+  maxFury : number;
+  health : number;
+  mana : number;
+  stamina : number;
+  fury : number;
+  healthRegen : number;
+  manaRegen : number;
+  staminaRegen : number;
+  furyRegen : number;
+  damageResistance : number;
+  qName : string;
+  eName : string;
+  rName : string;
+  weaponName : string;
+  damage : number;
+  qDamage : number;
+  eDamage : number;
+  rDamage : number;
+  rightWeaponDamage : number;
+  leftWeaponDamage : number;
+  qManaCost : number;
+  eManaCost : number;
+  rManaCost : number;
+  shiftStaminaCost : number;
+  leftWeaponStaminaCost : number;
+  rightWeaponStaminaCost : number;
+  qDescription : string;
+  eDescription : string;
+  rDescription : string;
+  weaponDescription : string;
+  speed : number;
+  normalSpeed : number;
+  blockDamageResistance : number;
+  weaponHealth : number;
+  maxLeftWeaponStances : number;
+  maxRightWeaponStances : number;
+  leftWeaponStance : number;
+  rightWeaponStance: number;
+  qAnimationTime : number;
+  eAnimationTime : number;
+  rAnimationTime : number;
+  attackSpeed : number;
+  rightWeaponAnimationTime : number;
+  leftWeaponAnimationTime : number;
+  blockAnimationTime : number;
+  takeDamageAnimationTime : number;
+  leftWeaponStanceTime : number;
+  rightWeaponStanceTime : number;
+  isAttackingTime : number;
+  qCooldown : number;
+  eCooldown : number;
+  rCooldown : number;
+  leftWeaponCooldown : number;
+  rightWeaponCooldown : number;
+  maxQCooldown : number;
+  maxECooldown : number;
+  maxRCooldown : number;
+  maxLeftWeaponCooldown : number;
+  maxRightWeaponCooldown : number;
+  constructor(userLvl : number) {
     this.id = 1;
     this.name = "Inferno Blaze";
     this.role = 1;
@@ -73,18 +138,18 @@ module.exports = class InfernoBlaze {
     this.maxRightWeaponCooldown = this.rightWeaponAnimationTime;
   }
   onStart(connection = Connection) {
-    let socket = connection.gameSocket;
-    socket.on('collisionDestroy', function(data) {
+    let socket = connection.socket;
+    socket.on('collisionDestroy', function(data : any) {
       connection.player.class.onCollisionDestroy(connection, data);
     });
-    socket.on('EarthShatterDamage', function(data) {
+    socket.on('EarthShatterDamage', function(data : any) {
       connection.player.class.onEarthShatterDamage(connection, data);
     });
   }
-  LeftWeapon(connection = Connection, data) {
+  LeftWeapon(connection = Connection, data : any) {
     let playerClass = this;
     let player = connection.player;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let currentTime = (new Date()).getTime();
     if (playerClass.leftWeaponCooldown < currentTime && playerClass.stamina >= playerClass.leftWeaponStaminaCost) {
 
@@ -110,10 +175,10 @@ module.exports = class InfernoBlaze {
       socket.broadcast.to(connection.gameLobby.id).emit('LeftWeapon', returnData);
     }
   }
-  RightWeapon(connection = Connection, data) {
+  RightWeapon(connection = Connection, data : any) {
     let playerClass = this;
     let player = connection.player;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let currentTime = (new Date()).getTime();
     if (playerClass.rightWeaponCooldown < currentTime && playerClass.stamina >= playerClass.rightWeaponStaminaCost) {
 
@@ -140,10 +205,10 @@ module.exports = class InfernoBlaze {
       socket.broadcast.to(connection.gameLobby.id).emit('RightWeapon', returnData);
     }
   }
-  QAbility(connection = Connection, data) {
+  QAbility(connection = Connection, data : any) {
     let playerClass = this;
     let player = connection.player;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let currentTime = (new Date()).getTime();
     if (playerClass.qCooldown < currentTime && playerClass.mana >= playerClass.qManaCost) {
       playerClass.isAttackingTime = currentTime + playerClass.qAnimationTime;
@@ -160,10 +225,10 @@ module.exports = class InfernoBlaze {
       socket.broadcast.to(connection.gameLobby.id).emit('QAbility', returnData);
     }
   }
-  EAbility(connection = Connection, data) {
+  EAbility(connection = Connection, data : any) {
     let playerClass = this;
     let player = connection.player;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let currentTime = (new Date()).getTime();
     if (playerClass.eCooldown < currentTime && playerClass.mana >= playerClass.eManaCost) {
       playerClass.isAttackingTime = currentTime + playerClass.eAnimationTime;
@@ -189,10 +254,10 @@ module.exports = class InfernoBlaze {
       socket.broadcast.to(connection.gameLobby.id).emit('EAbility', returnData);
     }
   }
-  RAbility(connection = Connection, data) {
+  RAbility(connection = Connection, data : any) {
     let playerClass = this;
     let player = connection.player;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let currentTime = (new Date()).getTime();
     if (playerClass.rCooldown < currentTime && playerClass.mana >= playerClass.rManaCost) {
       playerClass.isAttackingTime = currentTime + playerClass.rAnimationTime;
@@ -215,7 +280,7 @@ module.exports = class InfernoBlaze {
       socket.broadcast.to(connection.gameLobby.id).emit('RAbility', returnData);
     }
   }
-  onEarthShatter(connection = Connection, data, isAI = false) {
+  onEarthShatter(connection = Connection, data : any, isAI = false) {
     let lobby = connection.gameLobby;
     let earthShatter = new EarthShatter();
     earthShatter.name = 'EarthShatter';
@@ -238,14 +303,14 @@ module.exports = class InfernoBlaze {
     }
 
     if (!isAI) {
-      connection.gameSocket.emit('serverSpawn', returnData);
-      connection.gameSocket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Only broadcast to those in the same lobby as us
+      connection.socket.emit('serverSpawn', returnData);
+      connection.socket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Only broadcast to those in the same lobby as us
     } else if (lobby.connections.length > 0) {
-      lobby.connections[0].gameSocket.emit('serverSpawn', returnData);
-      lobby.connections[0].gameSocket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Broadcast to everyone that the ai spawned a bullet for
+      lobby.connections[0].socket.emit('serverSpawn', returnData);
+      lobby.connections[0].socket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Broadcast to everyone that the ai spawned a bullet for
     }
   }
-  onFireBullet(connection = Connection, data, isAI = false) {
+  onFireBullet(connection = Connection, data : any, isAI = false) {
     let lobby = connection.gameLobby;
     let bullet = new Bullet();
     bullet.name = 'Bullet';
@@ -275,18 +340,18 @@ module.exports = class InfernoBlaze {
       speed: bullet.speed
     }
     if (!isAI) {
-      connection.gameSocket.emit('serverSpawn', returnData);
-      connection.gameSocket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Only broadcast to those in the same lobby as us
+      connection.socket.emit('serverSpawn', returnData);
+      connection.socket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Only broadcast to those in the same lobby as us
     } else if (lobby.connections.length > 0) {
-      lobby.connections[0].gameSocket.emit('serverSpawn', returnData);
-      lobby.connections[0].gameSocket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Broadcast to everyone that the ai spawned a bullet for
+      lobby.connections[0].socket.emit('serverSpawn', returnData);
+      lobby.connections[0].socket.broadcast.to(lobby.id).emit('serverSpawn', returnData); //Broadcast to everyone that the ai spawned a bullet for
     }
   }
-  WeaponDamage(connection = Connection, data) {
+  WeaponDamage(connection = Connection, data : any) {
     let playerClass = this;
     let lobby = connection.gameLobby;
     let playerHit = false;
-    let weaponDamage = null;
+    let weaponDamage : number;
     let hitID = data.id;
     let hitterID = connection.id;
     if (data.weapon == 0) {
@@ -294,7 +359,7 @@ module.exports = class InfernoBlaze {
     } else {
       weaponDamage = playerClass.rightWeaponDamage;
     }
-    lobby.connections.forEach(c => {
+    lobby.connections.forEach((c : typeof Connection) => {
       let player = c.player;
       if (c.id == hitID && !player.isDead && c.id != hitterID) {
         player.dealDamage(c, weaponDamage);
@@ -302,28 +367,28 @@ module.exports = class InfernoBlaze {
       }
     });
     if (!playerHit) {
-      let aiList = lobby.serverItems.filter(item => {
+      let aiList = lobby.serverItems.filter((item : typeof BotAI) => {
         return item instanceof BotAI;
       });
-      aiList.forEach(ai => {
+      aiList.forEach((ai : typeof BotAI) => {
         if (ai.id == hitID && !ai.isDead) {
           ai.dealDamage(connection, weaponDamage);
         }
       });
     }
   }
-  onEarthShatterDamage(connection = Connection, data) {
+  onEarthShatterDamage(connection = Connection, data : any) {
     let lobby = connection.gameLobby;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let hitID = data.hitID;
     let collisionPosition = new Vector3(data.position.x, data.position.y, data.position.z)
     // this comes from the client since the server takes so much time calculating the bullet position
-    let returnObjects = lobby.serverObjects.filter(object => {
+    let returnObjects = lobby.serverObjects.filter((object : any) => {
       return object.id == data.id;
     });
-    returnObjects.forEach(object => {
+    returnObjects.forEach((object : any) => {
       let playerHit = false;
-      lobby.connections.forEach(c => {
+      lobby.connections.forEach((c : typeof Connection) => {
         let player = c.player;
         if (object.activator != c.id && !player.isDead && c.id == hitID) {
           let distance = collisionPosition.Distance(player.position);
@@ -335,10 +400,10 @@ module.exports = class InfernoBlaze {
       });
       if (!playerHit) {
         //also u can push loot after AI die
-        let aiList = lobby.serverItems.filter(item => {
+        let aiList = lobby.serverItems.filter((item : typeof BotAI) => {
           return item instanceof BotAI;
         });
-        aiList.forEach(ai => {
+        aiList.forEach((ai : typeof BotAI)  => {
           if (object.activator != ai.id && !ai.isDead && hitID == ai.id) {
             let distance = collisionPosition.Distance(ai.position);
             if (distance < 2) {
@@ -349,19 +414,19 @@ module.exports = class InfernoBlaze {
       }
     });
   }
-  onCollisionDestroy(connection = Connection, data) {
+  onCollisionDestroy(connection = Connection, data : any) {
     let lobby = connection.gameLobby;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
     let hitID = data.hitID;
     // this comes from the client since the server takes so much time calculating the bullet position
-    let returnBullets = lobby.serverObjects.filter(bullet => {
+    let returnBullets = lobby.serverObjects.filter((bullet : typeof Bullet) => {
       return bullet.id == data.id;
     });
 
-    returnBullets.forEach(bullet => {
+    returnBullets.forEach((bullet : typeof Bullet)  => {
       let playerHit = false;
 
-      lobby.connections.forEach(c => {
+      lobby.connections.forEach((c : typeof Connection)  => {
         let player = c.player;
         if (bullet.activator != c.id && !player.isDead && hitID == c.id) {
           let distance = bullet.position.Distance(player.position);
@@ -374,10 +439,10 @@ module.exports = class InfernoBlaze {
       });
       if (!playerHit) {
         //also u can push loot after AI die
-        let aiList = lobby.serverItems.filter(item => {
+        let aiList = lobby.serverItems.filter((item : typeof BotAI)  => {
           return item instanceof BotAI;
         });
-        aiList.forEach(ai => {
+        aiList.forEach((ai : typeof BotAI)  => {
           if (bullet.activator != ai.id && !ai.isDead && hitID == ai.id) {
             let distance = bullet.position.Distance(ai.position);
             if (distance < 2) {

@@ -1,10 +1,10 @@
 let Quest = require('./Quest')
 module.exports = class Quest_Traveler {
+  quests : any[];
   constructor() {
-    let quests = [];
-    quests.push(this.KillMonster());
-    quests.push(this.FindObject());
-    return quests;
+    this.quests.push(this.KillMonster());
+    this.quests.push(this.FindObject());
+    // return this.quests;
   }
   KillMonster() {
     let quest = new Quest();

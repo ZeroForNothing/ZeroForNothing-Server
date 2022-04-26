@@ -3,8 +3,8 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-let GameServer = require('./Classes/GameServer')
-let gameServer = new GameServer();
+let GameServer = require('./Code/Server')
+let nodeServer = new GameServer();
 
 const serverManager = require('http').Server(app)
 const io = require("socket.io")(serverManager,
@@ -15,22 +15,22 @@ const io = require("socket.io")(serverManager,
     }
   }
 );
-function serverLog(text) {
+function serverLog(text : string) {
   console.log("Game Server =>", text);
 }
 
-serverManager.listen(process.env.GAMEPORT, () => serverLog(`Listening on port 3004`));
+serverManager.listen(process.env.PORT, () => serverLog(`Listening on port ${process.env.PORT}`));
 
 // let Queue = require('./Classes/Queue.js');
 
 setInterval(() => {
-  gameServer.onUpdate();
-}, 100 / 3, 0);
+  nodeServer.onUpdate();
+}, 100 / 3);
 
-io.on('connection', function (socket) {
+io.on('connection', function (socket : any) {
   serverLog("Connection Started ( Socket id: " + socket.id + " )")
-  socket.on('socketLogin', function (data) {
-    if (data.platform != null && data.email != null)
-      gameServer.onConnected(socket, data.platform, data.email);
+  socket.on('socketLogin', function (data : any) {
+    if (data.email != null)
+    nodeServer.onConnected(socket, data.email);
   });
 })

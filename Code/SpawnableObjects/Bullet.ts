@@ -1,7 +1,11 @@
-var ServerObject = require('../Utility/ServerObjects.js');
+var ServerObject = require('../Utility/ServerObject.js');
 var Vector3 = require('../Utility/Vector3.js');
-
+export {}
 module.exports = class Bullet extends ServerObject {
+  direction : typeof Vector3;
+  speed : number;
+  isDestroyed : boolean;
+  activator : string;
   constructor() {
     super();
     this.direction = new Vector3();

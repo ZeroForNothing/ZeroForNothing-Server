@@ -1,5 +1,14 @@
+const Server = require('./Server');
+
 module.exports = class Queue {
-  constructor(server) {
+  items : any[];
+  findingMatchArray : any[];
+  blueTeamStillNeed : number;
+  redTeamStillNeed : number;
+  checking : boolean;
+  server : any;
+
+  constructor(server : typeof Server) {
     this.items = [];
     this.findingMatchArray = [];
     this.blueTeamStillNeed = 5;
@@ -7,7 +16,7 @@ module.exports = class Queue {
     this.checking = false;
     this.server = server;
   }
-  enterQueue(item) {
+  enterQueue(item : any) {
     // adding element to the queue
     this.items.push(item);
     item.socket.emit('startQueue')
@@ -63,20 +72,16 @@ module.exports = class Queue {
             tempItem.socket.broadcast.to(tempItem.lobbyID).emit('showAcceptScreen', serverDate)
           });
           setTimeout(function() {
-            let everyLobbyAnswer = [];
-            tempArray.forEach((tempItem, i) => {
-              let lobby = server.lobbys[tempItem.lobbyID]
+            let everyLobbyAnswer : boolean[] = [];
+            tempArray.forEach((tempItem) => {
+              let lobby = this.server.lobbys[tempItem.lobbyID]
               if (lobby != null) {
-                everyLobbyAnswer.push(lobby.membersAccepted.every((value) => {
-                  return value == true
-                }))
+                everyLobbyAnswer.push(lobby.membersAccepted.every((value : boolean) => { return value == true }))
               } else {
                 everyLobbyAnswer.push(false)
               }
             });
-            let allAccepted = everyLobbyAnswer.every((value) => {
-              return value == true;
-            });
+            let allAccepted = everyLobbyAnswer.every((value) => { return value == true; });
             if (allAccepted) {
               //move players to ability select
               tempArray.forEach(arrayItem => {
@@ -118,24 +123,24 @@ module.exports = class Queue {
       this.checkCompatibleQueue()
     }
   }
-  acceptScreenShown(lobbyID) {
+  acceptScreenShown( lobbyID : string) {
     for (let i = 0; i < this.items.length; i++)
       if (this.items[i].lobbyID == lobbyID) {
         this.items[i].acceptShown = true
         return;
       }
   }
-  acceptScreenRemoved(lobbyID) {
+  acceptScreenRemoved(lobbyID : string) {
     this.items.forEach(item => {
       if (item.lobbyID == lobbyID) {
         item.acceptShown = false;
         item.socket.emit('removeAcceptScreen')
-        item.socket.broadcast.to(connection.lobby.id).emit('removeAcceptScreen')
+        // item.socket.broadcast.to(connection.lobby.id).emit('removeAcceptScreen')
         return;
       }
     })
   }
-  leaveQueue(lobbyID) {
+  leaveQueue(lobbyID : string) {
     this.items.forEach((item, spliceIndex) => {
       if (item.lobbyID == lobbyID) {
         if (this.findingMatchArray.length != 0) {

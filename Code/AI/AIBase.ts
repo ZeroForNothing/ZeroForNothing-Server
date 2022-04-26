@@ -1,16 +1,16 @@
-let ServerItem = require('../Utility/ServerItem')
+let ServerObject = require('../Utility/ServerObject')
 let Vector3 = require('../Utility/Vector3')
-
-module.exports = class AIBase extends ServerItem {
+export {}
+module.exports = class AIBase extends ServerObject {
   constructor() {
     super();
     this.name = "AI_Base";
   }
-  onUpdate(onUpdateAI) {
+  onUpdate(onUpdateAI : any) {
     //calculate statemachine (cast ability or hit somehting or set prioty to get cover shit like that) AI related stuff
 
   }
-  onObtainTarget(connections, onUpdateRotation) {
+  onObtainTarget(connections : typeof Connection[], onUpdateRotation : any) {
 
   }
   radiansToDegrees() {
@@ -22,7 +22,7 @@ module.exports = class AIBase extends ServerItem {
   worldUpVector() {
     return new Vector3(0, 0, 1);
   }
-  getAngleDifference(one, two) {
+  getAngleDifference(one : number, two : number) {
     let diff = (two - one + 180) % 360 - 180;
     return diff < -180 ? diff + 360 : diff;
   }

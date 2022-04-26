@@ -3,13 +3,21 @@ let GameLobbySettings = require('./GameLobbySettings')
 let Connection = require('../Connection')
 
 let LobbyState = require('../Utility/LobbyState')
-let ServerItem = require('../Utility/ServerItem')
+let ServerObject = require('../Utility/ServerObject')
 let Vector3 = require('../Utility/Vector3')
 let BotAI = require('../AI/BotAI')
 let QuestGiver = require('../AI/QuestGiver')
 let Quest_Traveler = require('../Quests/Quest_Traveler')
+export {}
 module.exports = class GameLobby extends LobbyBase {
-  constructor(name, settings = GameLobbySettings) {
+  name : string;
+  matchHasStarted : boolean;
+  settings : any;
+  lobbyState : typeof LobbyState;
+  serverObjects : typeof ServerObject[];
+  serverItems : typeof ServerObject[];
+  endGameLobby = function() {};
+  constructor(name : string, settings = GameLobbySettings) {
     super();
     this.name = name;
     this.matchHasStarted = false;
@@ -33,14 +41,14 @@ module.exports = class GameLobby extends LobbyBase {
         ai.onObtainTarget(lobby.connections);
         ai.onUpdate();
       };
-      lobby.connections.forEach(connection => {
+      lobby.connections.forEach((connection : typeof Connection) => {
         if (connection.gameSocket != null) {
           ai.BotManager(connection, lobby.id);
           return;
         }
       })
     })
-    lobby.connections.forEach(connection => {
+    lobby.connections.forEach((connection : typeof Connection) => {
       if (connection.gameSocket != null)
         connection.player.onUpdatePlayer(connection);
     })
@@ -70,7 +78,7 @@ module.exports = class GameLobby extends LobbyBase {
     let socket = connection.gameSocket;
     let alreadyInLobby = false;
     connection.gameLobby = this;
-    lobby.connections.forEach(tempConn => {
+    lobby.connections.forEach((tempConn : typeof Connection) => {
       if (tempConn.id == connection.id) {
         alreadyInLobby = true;
         connection.log("Already in the lobby before")
@@ -152,25 +160,25 @@ module.exports = class GameLobby extends LobbyBase {
     // }
   }
 
-  onSpawnAllPlayersIntoGame(connection) {
+  onSpawnAllPlayersIntoGame(connection : typeof Connection) {
     let lobby = this;
     let connections = lobby.connections;
     if (connection != null) {
       lobby.addOldPlayer(connection)
     } else {
-      connections.forEach(connection => {
+      connections.forEach((connection : typeof Connection) => {
         lobby.addNewPlayer(connection);
       })
     }
   }
-  addOldPlayer(connection) {
+  addOldPlayer(connection : typeof Connection) {
     let lobby = this;
     let connections = lobby.connections;
     let socket = connection.gameSocket;
 
     connection.log("Waking up in the game");
 
-    connections.forEach(c => {
+    connections.forEach((c : typeof Connection) => {
       c.gameSocket.emit('spawn', {
         id: c.id,
         position: c.player.position.JSONData(),
@@ -185,7 +193,7 @@ module.exports = class GameLobby extends LobbyBase {
 
     connection.log("Spawning in the game");
     //when first time connecting
-    connections.forEach(c => {
+    connections.forEach((c : typeof Connection) => {
       socket.emit('spawn', {
         id: c.id,
         position: c.player.position.JSONData(),
@@ -198,8 +206,8 @@ module.exports = class GameLobby extends LobbyBase {
   onSpawnAIIntoGame(connection = Connection) {
     let lobby = this;
     if (connection == null) {
-      lobby.onServerSpawn(new BotAI(), new Vector3(397, 0, 437), connection);
-      lobby.onServerSpawn(new QuestGiver(new Quest_Traveler()), new Vector3(393, 2, 516), connection);
+      lobby.onServerSpawn(new BotAI(), new Vector3(397, 0, 437));
+      lobby.onServerSpawn(new QuestGiver(new Quest_Traveler()), new Vector3(393, 2, 516));
     } else {
       let serverItems = lobby.serverItems;
       serverItems.forEach(item => {
@@ -240,7 +248,7 @@ module.exports = class GameLobby extends LobbyBase {
     let lobby = this;
     let connections = lobby.connections;
 
-    connections.forEach(connection => {
+    connections.forEach((connection : typeof Connection) => {
       let player = connection.player;
 
       if (player.isDead) {
@@ -271,7 +279,7 @@ module.exports = class GameLobby extends LobbyBase {
     });
   }
 
-  despawnObject(object) {
+  despawnObject(object : any) {
     let lobby = this;
     let serverObjects = lobby.serverObjects;
     let connections = lobby.connections;
@@ -284,13 +292,13 @@ module.exports = class GameLobby extends LobbyBase {
         id: object.id
       }
       //Send remove bullet command to players
-      connections.forEach(connection => {
+      connections.forEach((connection : typeof Connection) => {
         connection.gameSocket.emit('serverUnspawn', returnData);
       });
     }
   }
 
-  onServerSpawn(item = ServerItem, location = Vector3) {
+  onServerSpawn(item = ServerObject, location = Vector3) {
     let lobby = this;
     let serverItems = lobby.serverItems;
     let connections = lobby.connections;
@@ -299,7 +307,7 @@ module.exports = class GameLobby extends LobbyBase {
     //set item into the array
     serverItems.push(item);
     //tell everyone in the room
-    connections.forEach(connection => {
+    connections.forEach((connection : typeof Connection) => {
       connection.gameSocket.emit('serverSpawn', {
         id: item.id,
         name: item.name,
@@ -308,7 +316,7 @@ module.exports = class GameLobby extends LobbyBase {
       })
     })
   }
-  onServerUnspawn(item = ServerItem) {
+  onServerUnspawn(item = ServerObject) {
     let lobby = this;
 
     let connections = lobby.connections;
@@ -316,13 +324,13 @@ module.exports = class GameLobby extends LobbyBase {
     // remove item from array/game
     lobby.deleteServerItem(item);
     //tell everyone in the room
-    connections.forEach(connection => {
+    connections.forEach((connection : typeof Connection) => {
       connection.gameSocket.emit('serverUnspawn', {
         id: item.id
       })
     })
   }
-  deleteServerItem(item = ServerItem) {
+  deleteServerItem(item = ServerObject) {
     let lobby = this;
     let serverItems = lobby.serverItems;
     let index = serverItems.indexOf(item);

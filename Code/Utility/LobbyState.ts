@@ -1,11 +1,9 @@
 module.exports = class LobbyState  {
-
+  LOBBY = 'Lobby';
+  GAME = 'Game';
+  ENDGAME = 'EndGame';
+  currentState : string;
   constructor(){
-    //predefined states
-    this.GAME = 'Game';
-    this.LOBBY = 'Lobby';
-    this.ENDGAME = 'EndGame';
-
     //current state of the lobby
     this.currentState = this.LOBBY;
   }

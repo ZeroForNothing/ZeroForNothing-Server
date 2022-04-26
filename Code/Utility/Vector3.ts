@@ -1,5 +1,7 @@
 module.exports = class Vector3{
-
+  x : number;
+  y : number;
+  z : number;
   constructor( x = 0 ,  y = 0  , z = 0){
     this.x = x;
     this.y = y;
@@ -14,7 +16,7 @@ module.exports = class Vector3{
     var mag = this.Magnitude();
     return new Vector3(this.x / mag , this.y / mag , this.z / mag  )
   }
-  Distance(otherVector = Vector3){
+  Distance(otherVector : Vector3){
     var direction = new Vector3();
     direction.x = otherVector.x - this.x;
     direction.y = otherVector.y - this.y;

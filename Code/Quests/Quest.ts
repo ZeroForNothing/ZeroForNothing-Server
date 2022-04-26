@@ -1,11 +1,13 @@
 module.exports = class Quest {
+  id : number;
+  requiredAmount : number;
+  title : string;
+  description : string;
+  experience : number;
+  normalCoin : number;
+  currentAmount : number;
+  isReached : boolean;
   constructor() {
-    this.id = undefined;
-    this.requiredAmount = undefined;
-    this.title = undefined;
-    this.description = undefined;
-    this.experience = undefined;
-    this.normalCoin = undefined;
     this.currentAmount = 0;
     this.isReached = false;
   }

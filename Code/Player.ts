@@ -1,10 +1,26 @@
+const Connection = require('./Connection')
 var Vector3 = require('./Utility/Vector3.js');
 let BotAI = require('./AI/BotAI')
+export {}
 module.exports = class Player {
-
+  position : typeof Vector3;
+  rotation : number;
+  respawnTime : number;
+  isBlocking : number;
+  isCrouching : number;
+  isRunning : number;
+  isGrounded : number;
+  isDead : number;
+  isTakingDamage : number;
+  isAttacking : number;
+  takeDamageBoolTime : number;
+  animation : string;
+  comboHitsTime : number;
+  comboHits: number;
+  class : any;
   constructor() {
     this.position = new Vector3(388, 5, 573);
-    this.rotation = new Number(175);
+    this.rotation = 175;
     this.respawnTime = (new Date()).getTime();
     this.isBlocking = 0;
     this.isCrouching = 0;
@@ -33,7 +49,7 @@ module.exports = class Player {
     }
     return false;
   }
-  dealDamage(connection, amount = Number) {
+  dealDamage(connection : typeof Connection, amount : number) {
     let player = this;
     let playerClass = this.class;
     let currentTime = (new Date()).getTime();
@@ -62,10 +78,10 @@ module.exports = class Player {
       DamageAmount: amount,
       comboHits: player.comboHits
     }
-    connection.gameSocket.emit("TakingDamage", returnData);
-    connection.gameSocket.broadcast.to(connection.gameLobby.id).emit("TakingDamage", returnData);
+    connection.socket.emit("TakingDamage", returnData);
+    connection.socket.broadcast.to(connection.gameLobby.id).emit("TakingDamage", returnData);
   }
-  ComboHits(currentTime) {
+  ComboHits(currentTime : number) {
     let player = this;
     if (player.comboHitsTime + 3000 > currentTime) {
       player.comboHits++;
@@ -77,7 +93,7 @@ module.exports = class Player {
   onUpdatePlayer(connection = Connection) {
     let player = this;
     let playerClass = this.class;
-    let socket = connection.gameSocket;
+    let socket = connection.socket;
 
     let currentTime = (new Date()).getTime();
     if (player.takeDamageBoolTime <= currentTime) {
@@ -129,14 +145,14 @@ module.exports = class Player {
       rotation: player.rotation,
       animation: player.animation
     }
-    socket.broadcast.to(connection.gameLobby.id).emit('updatePlayer', dataTothem);
+    socket.broadcast.to(connection.socket.id).emit('updatePlayer', dataTothem);
   }
-  InfrontPlayerStats(connection = Connection, hitID) {
+  InfrontPlayerStats(connection = Connection, hitID :string) {
     let lobby = connection.gameLobby;
     let whoWantDataID = connection.id;
     let playerHit = false;
-    let socket = connection.gameSocket;
-    lobby.connections.forEach(c => {
+    let socket = connection.socket;
+    lobby.connections.forEach((c : typeof Connection) => {
       if (c.id == hitID) {
         let player = c.player;
         let playerClass = c.player.class;
@@ -162,10 +178,10 @@ module.exports = class Player {
       }
     });
     if (!playerHit) {
-      let aiList = lobby.serverItems.filter(item => {
+      let aiList = lobby.serverItems.filter((item : typeof BotAI) => {
         return item instanceof BotAI;
       });
-      aiList.forEach(ai => {
+      aiList.forEach((ai : typeof BotAI) => {
         if (ai.id == hitID) {
           let returnData = {
             id: ai.id,

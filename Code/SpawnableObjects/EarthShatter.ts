@@ -1,10 +1,12 @@
-var ServerObject = require('../Utility/ServerObjects.js');
-var Vector3 = require('../Utility/Vector3.js');
-
+var ServerObject = require('../Utility/ServerObject.js');
+export {}
 module.exports = class EarthShatter extends ServerObject {
+  isDestroyed : boolean;
+  activator : string;
+  lifeSpan : number;
+  aliveTime : number;
   constructor() {
     super();
-    this.position = new Vector3();
     this.isDestroyed = false;
     this.activator = '';
     this.lifeSpan = 4210;

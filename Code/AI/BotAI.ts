@@ -1,7 +1,47 @@
 let Vector3 = require('../Utility/Vector3')
 let AIBase = require('../AI/AIBase')
-
+export {}
 module.exports = class BotAI extends AIBase {
+  name : string;
+  target : typeof Connection;
+  hasTarget : boolean;
+  rotation : number;
+  weaponDamage : number;
+  rightWeaponAnimationTime: number; //animation time right weapon
+  leftWeaponAnimationTime : number; //animation time left weapon
+  blockAnimationTime : number;//animation time block
+  takeDamageAnimationTime : number; //animation time takeDamage
+  attackType : number;
+  maxHealth : number;
+  maxMana : number;
+  maxStamina : number;
+  maxFury : number;
+  health : number;
+  mana : number;
+  stamina : number;
+  fury : number;
+  rightWeaponDamage : number;
+  leftWeaponDamage : number;
+  damageResistance : number;
+  blockDamageResistance : number;
+  isAttacking : number;
+  isBlocking : number;
+  isDead : number;
+  isTakingDamage : number;
+  respawnTime : number;
+  forwardDirection : number;
+  speed : number;
+  normalSpeed : number;
+  rotationSpeed : number;
+  timeBetweenAttacks : number;
+  reloadTime : number; // respawn timer
+  percentageRateBlock : number; // 20% chance to block
+  takeDamageBoolTime : number;
+  blockBoolTime : number;
+  attackBoolTime : number;
+  comboHits : number;
+  comboHitsTime : number;
+  AwayFromSpawn : boolean;
   constructor() {
     super();
     this.name = "AI_Bot";
@@ -14,18 +54,18 @@ module.exports = class BotAI extends AIBase {
     this.blockAnimationTime = 1983; //animation time block
     this.takeDamageAnimationTime = 1267 //animation time takeDamage
     this.attackType = 0;
-    this.maxHealth = new Number(200);
-    this.maxMana = new Number(200);
-    this.maxStamina = new Number(200);
-    this.maxFury = new Number(0);
+    this.maxHealth = 200;
+    this.maxMana =200;
+    this.maxStamina = 200;
+    this.maxFury = 0;
     this.health = this.maxHealth;
     this.mana = this.maxMana;
     this.stamina = this.maxStamina;
     this.fury = this.maxFury;
-    this.rightWeaponDamage = new Number(20);
-    this.leftWeaponDamage = new Number(30);
-    this.damageResistance = new Number(10);
-    this.blockDamageResistance = new Number(30);
+    this.rightWeaponDamage = 20;
+    this.leftWeaponDamage = 30;
+    this.damageResistance = 10;
+    this.blockDamageResistance = 30;
     this.isAttacking = 0;
     this.isBlocking = 0;
     this.isDead = 0;
@@ -43,8 +83,6 @@ module.exports = class BotAI extends AIBase {
     this.attackBoolTime = (new Date()).getTime();
     this.comboHits = 0;
     this.comboHitsTime = (new Date()).getTime();
-    this.comboHitsTime = (new Date()).getTime();
-    this.comboHits = 0;
     this.AwayFromSpawn = false;
   }
   onUpdate() {
@@ -86,7 +124,7 @@ module.exports = class BotAI extends AIBase {
     } else if (targetConnection.gameSocket != null)
       ai.checkAbleToAttack(targetConnection);
   }
-  onObtainTarget(connections) {
+  onObtainTarget(connections : typeof Connection[]) {
     let ai = this;
     let foundTarget = false;
     let availableTargets = [];
@@ -160,7 +198,7 @@ module.exports = class BotAI extends AIBase {
     return new Vector3((cos * tx) + (sin * tz), ty, -(sin * tx) + (cos * tz));
     // so its vector3( sin , 0 , cos)
   }
-  checkAbleToAttack(targetConnection) {
+  checkAbleToAttack(targetConnection : typeof Connection) {
     let ai = this;
     let player = targetConnection.player;
     let currentTime = (new Date()).getTime();
@@ -188,19 +226,19 @@ module.exports = class BotAI extends AIBase {
   }
   respawnCounter() {
     if (this.respawnTime < (new Date()).getTime()) {
-      this.health = new Number(200);
-      this.mana = new Number(200);
-      this.stamina = new Number(200);
-      this.fury = new Number(0);
-      this.rightWeaponDamage = new Number(20);
-      this.leftWeaponDamage = new Number(30);
-      this.damageResistance = new Number(10);
+      this.health = 200
+      this.mana = 200
+      this.stamina = 200
+      this.fury = 0
+      this.rightWeaponDamage = 20
+      this.leftWeaponDamage = 30
+      this.damageResistance = 10
       this.isDead = 0;
       this.position = new Vector3(397, 0, 437);
       console.log("Respawning AI id : " + this.id);
     }
   }
-  dealDamage(connection, amount = Number) {
+  dealDamage(connection : typeof Connection, amount : number) {
     let ai = this;
     let currentTime = (new Date()).getTime();
 
@@ -223,7 +261,7 @@ module.exports = class BotAI extends AIBase {
       ai.isDead = 1;
       ai.respawnTime = currentTime + 5000;
       if (connection.quests.length != 0) {
-        connection.quests.forEach(quest => {
+        connection.quests.forEach((quest : typeof Quest) => {
           if (quest.id == 0 && !quest.isReached) {
             quest.increaseQuestAmount();
             connection.gameSocket.emit("increaseQuestAmount", {
@@ -247,7 +285,7 @@ module.exports = class BotAI extends AIBase {
     connection.gameSocket.emit("TakingDamage", returnData);
     connection.gameSocket.broadcast.to(connection.gameLobby.id).emit("TakingDamage", returnData);
   }
-  ComboHits(currentTime) {
+  ComboHits(currentTime : number) {
     let ai = this;
     if (ai.comboHitsTime + 3000 > currentTime) {
       ai.comboHits++;
@@ -256,7 +294,7 @@ module.exports = class BotAI extends AIBase {
     }
     ai.comboHitsTime = currentTime;
   }
-  BotManager(connection = Connection, lobbyID) {
+  BotManager(connection = Connection, lobbyID : string) {
     let socket = connection.gameSocket;
     let ai = this;
     let currentTime = (new Date()).getTime();
