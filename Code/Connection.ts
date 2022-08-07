@@ -121,10 +121,10 @@ module.exports = class Connection {
     socket.emit('registerUser', {
       zeroCoin: user.zeroCoin,
       normalCoin: user.normalCoin,
-      profilePicType: user.profilePicType,
-      picToken: user.picToken,
-      username: user.name,
-      userCode: user.code,
+      prof: user.prof,
+      token: user.token,
+      name: user.name,
+      code: user.code,
       userEmail: user.email,
       settings: user.settings
     });
@@ -327,8 +327,8 @@ module.exports = class Connection {
       //need to get hold on of //count //type //owner //players  //name or id
       socket.emit('createLobby', {
         lobbyType: data.lobbyType,
-        username: user.name,
-        userCode: user.code,
+        name: user.name,
+        code: user.code,
         lobbyCount: server.searchLobbys[gamelobby.id].connections.length
       })
     });
@@ -352,23 +352,23 @@ module.exports = class Connection {
       })
     });
     socket.on('searchForUserToInvite', function (data : any) {
-      if (data.username == null || data.userCode == null || isNaN(data.userCode)) return;
-      server.database.searchForUser(userID, data.username, data.userCode, (dataD : any) => {
+      if (data.name == null || data.code == null || isNaN(data.code)) return;
+      server.database.searchForUser(userID, data.name, data.code, (dataD : any) => {
         socket.emit('searchForUserToInvite', {
           userCorrectName: dataD.userCorrectName,
           friendCode: dataD.friendCode,
-          picToken: dataD.picToken,
-          picType: dataD.picType,
-          username: data.username,
-          userCode: data.userCode
+          token: dataD.token,
+          prof: dataD.prof,
+          name: data.name,
+          code: data.code
         });
       })
     })
     socket.on('kickPlayerFromLobby', function (data : any) {
       if (userID != connection.searchLobby.leader) return;
-      if (data.username == null || data.userCode == null || isNaN(data.userCode)) return;
+      if (data.name == null || data.code == null || isNaN(data.code)) return;
       connection.searchLobby.connections.forEach((friendConn : Connection) => {
-        if (friendConn.user.name == data.username && friendConn.user.code == data.userCode) {
+        if (friendConn.user.name == data.name && friendConn.user.code == data.code) {
           // friendConn.socket.emit('OpenWindow', {
           //   window: data.window
           // });
@@ -383,26 +383,26 @@ module.exports = class Connection {
       let date = new Date();
       socket.emit('sendLobbyMsg', {
         message: data.message,
-        username: user.name,
-        userCode: user.code,
+        name: user.name,
+        code: user.code,
         myself: true,
         date: date
       });
       socket.broadcast.to(connection.searchLobby.id).emit('sendLobbyMsg', {
         message: data.message,
-        username: user.name,
-        userCode: user.code,
+        name: user.name,
+        code: user.code,
         myself: false,
         date: date
       });
     });
     socket.on('inviteToLobby', function (data : any) {
       server.connections.forEach((friendConn : Connection) => {
-        if (friendConn.user.name == data.username && friendConn.user.code == data.userCode) {
+        if (friendConn.user.name == data.name && friendConn.user.code == data.code) {
           friendConn.socket.emit('inviteToLobby', {
             lobbyID: connection.searchLobby.id,
-            username: user.name,
-            userCode: user.code
+            name: user.name,
+            code: user.code
           });
         }
       })
@@ -425,8 +425,8 @@ module.exports = class Connection {
       // })
       socket.emit('playerLeftLobby', null);
       socket.broadcast.to(oldLobbyID).emit("playerLeftLobby", {
-        username: user.name,
-        userCode: user.code,
+        name: user.name,
+        code: user.code,
         lobbyCount: server.searchLobbys[oldLobbyID].connections.length
       });
       server.searchLobbys[data.lobbyID].onSwitchSearchLobby(connection);
@@ -442,8 +442,8 @@ module.exports = class Connection {
       // })
       socket.emit('joinLobby', {
         gameMode: server.searchLobbys[data.lobbyID].settings.gameMode,
-        username: user.name,
-        userCode: user.code,
+        name: user.name,
+        code: user.code,
         friendList: user.friendList,
         lobbyPlayerNames: lobbyPlayerNames,
         lobbyPlayerCodes: lobbyPlayerCodes,
@@ -451,8 +451,8 @@ module.exports = class Connection {
       })
       socket.broadcast.to(connection.searchLobby.id).emit('joinLobby', {
         gameMode: server.searchLobbys[data.lobbyID].settings.gameMode,
-        username: user.name,
-        userCode: user.code,
+        name: user.name,
+        code: user.code,
         friendList: user.friendList,
         lobbyPlayerNames: lobbyPlayerNames,
         lobbyPlayerCodes: lobbyPlayerCodes,
@@ -461,24 +461,24 @@ module.exports = class Connection {
     });
     socket.on('promoteToLobbyLeader', function (data : any) {
       // if (connection.searchLobby.leader != userID) return;
-      // if (data.username == null || data.userCode == null || isNaN(data.userCode)) return;
+      // if (data.name == null || data.code == null || isNaN(data.code)) return;
       // let promotedPlayerIndex = connection.searchLobby.connections.findIndex((friendConn) => {
-      //   return (data.username == friendConn.user.name && data.userCode == friendConn.user.code);
+      //   return (data.name == friendConn.user.name && data.code == friendConn.user.code);
       // })
       // server.searchLobbys[lobbyID].leader = server.searchLobbys[lobbyID].connections[promotedPlayerIndex];
       // server.searchLobbys[lobbyID].connections[promotedPlayerIndex].socket.emit('promoteToLobbyLeader');
       // let imLeader = false;
-      // if (user.name == data.username && user.code == data.userCode)
+      // if (user.name == data.name && user.code == data.code)
       //   imLeader = true;
       // socket.emit('promoteToLobbyLeader', {
-      //   username: data.username,
-      //   userCode: user.code,
+      //   name: data.name,
+      //   code: user.code,
       //   imLeader: imLeader,
       //   myself: true
       // })
       // socket.broadcast.to(connection.searchLobby.id).emit('promoteToLobbyLeader', {
-      //   username: data.username,
-      //   userCode: user.code,
+      //   name: data.name,
+      //   code: user.code,
       //   myself: false
       // })
     });
@@ -518,7 +518,7 @@ module.exports = class Connection {
     // socket.on('leavingMainLobby', function(data) {
     //   if (data.queueLobbyName != null) {
     //     socket.leave('findingMatchID_' + data.queueLobbyName, function() {
-    //       clients[data.username].queueLobbyName = null;
+    //       clients[data.name].queueLobbyName = null;
     //     })
     //   }
     // });

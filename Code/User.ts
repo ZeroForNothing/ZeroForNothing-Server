@@ -2,9 +2,9 @@ module.exports = class User {
   name : string;
   code : number;
   email : string;
-  picToken : string;
-  profilePicType : string;
-  wallpaperPicType : string;
+  token : string;
+  prof : string;
+  wall : string;
   newAcc : number;
   zeroCoin : number;
   normalCoin : number;
@@ -15,9 +15,9 @@ module.exports = class User {
     this.name = data.name;
     this.code = data.code;
     this.email = data.email;
-    this.picToken = data.picToken;
-    this.profilePicType = data.profilePicType;
-    this.wallpaperPicType = data.wallpaperPicType;
+    this.token = data.token;
+    this.prof = data.prof;
+    this.wall = data.wall;
     this.newAcc = data.newAcc;
     this.zeroCoin = data.zeroCoin;
     this.normalCoin = data.normalCoin;
@@ -30,8 +30,8 @@ module.exports = class User {
       email: this.email,
       name: this.name,
       code : this.code,
-      picToken: this.picToken,
-      profilePicType: this.profilePicType,
+      token: this.token,
+      prof: this.prof,
       newAcc: this.newAcc,
       settings: this.settings
     }

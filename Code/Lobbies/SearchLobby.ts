@@ -39,8 +39,8 @@ module.exports = class SearchLobby extends LobbyBase {
     let searchLobbyMode = lobby.settings.gameMode;
     connection.everySocket('playerLeftLobby', null);
     connection.everySocketInLobby('playerLeftLobby', lobby.id, {
-      username: connection.user.name,
-      userCode: connection.user.code,
+      name: connection.user.name,
+      code: connection.user.code,
       lobbyCount: searchLobbyLength,
       gameType: searchLobbyMode
     })
@@ -49,8 +49,8 @@ module.exports = class SearchLobby extends LobbyBase {
       console.log('changing lobby Leader')
       lobby.leader = lobby.connections[0].id;
       connection.everySocketInLobby('promoteToLobbyLeader', lobby.id, {
-        username: lobby.connections[0].user.name,
-        userCode: lobby.connections[0].user.code
+        name: lobby.connections[0].user.name,
+        code: lobby.connections[0].user.code
       })
     }
     if (connection.server.searchLobbys[lobby.id].connections.length == 0) {

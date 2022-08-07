@@ -156,10 +156,10 @@ module.exports = class Player {
       if (c.id == hitID) {
         let player = c.player;
         let playerClass = c.player.class;
-        let username = c.user.name;
+        let name = c.user.name;
         let returnData = {
           id: c.id,
-          name: username,
+          name: name,
           health: playerClass.health,
           stamina: playerClass.stamina,
           mana: playerClass.mana,
